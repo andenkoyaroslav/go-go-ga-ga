@@ -47,7 +47,6 @@ export default function Chat() {
           event: "INSERT",
           schema: "public",
           table: "msg",
-          filter: `getter=eq.${user.id}`,
         },
         (payload) => {
           const newMessage = payload.new;
