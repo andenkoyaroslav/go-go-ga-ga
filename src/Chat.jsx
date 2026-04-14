@@ -31,7 +31,7 @@ export default function Chat() {
         .from("msg")
         .select("*")
         .or(
-          `and(sender.eq.${user.id},getter.eq.${userId}),and(sender.eq.${userId},getter.eq.${user.id})`
+          `and(sender.eq.${user.id},getter.eq.${userId}),and(sender.eq.${userId},getter.eq.${user.id})`,
         )
         .order("created_at", { ascending: true }); //фильтр по дате создания
       if (!error) setMessages(data);
@@ -40,17 +40,18 @@ export default function Chat() {
     fetchMessages();
 
     const subscription = supabase
-      .channel("public:msg")
+      .channel(`chat:${user.id}:${userId}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "msg",
+          //filter: `getter=eq.${user.id}`,
         },
         (payload) => {
           const newMessage = payload.new;
-          // Проверяем, относится ли сообщение к текущему диалогу
+
           const isRelevant =
             (newMessage.sender === user.id && newMessage.getter === userId) ||
             (newMessage.sender === userId && newMessage.getter === user.id);
@@ -58,7 +59,7 @@ export default function Chat() {
           if (isRelevant) {
             setMessages((prev) => [...prev, newMessage]);
           }
-        }
+        },
       )
       .subscribe();
 
@@ -84,12 +85,13 @@ export default function Chat() {
 
       <div className="messages-container">
         {messages.map((m) => (
-          <p
+          <div
             key={m.id}
-            className={m.sender === user?.id ? "my-message" : "other-message"}
+            className={`message ${m.sender === user?.id ? "my-message" : "their-message"}`}
           >
-            {m.text}
-          </p>
+            <div className="message-bubble">{m.text}</div>
+            <div className="message-time"></div>
+          </div>
         ))}
       </div>
 
@@ -97,7 +99,8 @@ export default function Chat() {
         <input
           onChange={(event) => setMsg(event.target.value)}
           className="chat-input"
-        ></input>
+          value={msg}
+        />
         <button onClick={sendMessage} className="chat-btn">
           Отправить
         </button>

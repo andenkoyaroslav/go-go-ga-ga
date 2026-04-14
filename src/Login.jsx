@@ -206,30 +206,6 @@ function Login() {
           </div>
         </form>
 
-        <div className="social-login">
-          <div className="divider">
-            <div className="divider-line" />
-            <div className="divider-text">
-              <span>Или войдите через</span>
-            </div>
-          </div>
-
-          <div className="social-buttons">
-            <button
-              onClick={() => handleSocialLogin("github")}
-              className="social-btn github-btn"
-            >
-              <span className="social-icon">🐙</span> GitHub
-            </button>
-            <button
-              onClick={() => handleSocialLogin("google")}
-              className="social-btn google-btn"
-            >
-              <span className="social-icon">🔍</span> Google
-            </button>
-          </div>
-        </div>
-
         <div className="toggle-mode">
           <button onClick={() => setIsSignUp(!isSignUp)} className="toggle-btn">
             {isSignUp
